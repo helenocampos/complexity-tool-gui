@@ -321,7 +321,7 @@ public class MainForm extends javax.swing.JFrame {
             try {
 
                 metodos.removeAllItems();
-
+                JavaParser.setDoNotAssignCommentsPreceedingEmptyLines(false);   
                 cu = JavaParser.parse(file);
                 className.setText(file.getName());
                 metodos.addItemListener(new ItemChangeListener());
