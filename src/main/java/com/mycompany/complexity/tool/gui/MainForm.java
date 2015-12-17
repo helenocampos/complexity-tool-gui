@@ -1,6 +1,5 @@
 package com.mycompany.complexity.tool.gui;
 
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -20,6 +19,9 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import java.awt.BorderLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -39,6 +41,7 @@ public class MainForm extends javax.swing.JFrame {
     public MainForm() {
         initComponents();
         methods = new ArrayList<>();
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     private ArrayList<CustomComboBoxItem> methods;
@@ -46,6 +49,10 @@ public class MainForm extends javax.swing.JFrame {
     private CompilationUnit cu;
 
     private CustomComboBoxItem activeItem;
+
+    private Renderer activeRenderer;
+
+    private App app;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -63,17 +70,29 @@ public class MainForm extends javax.swing.JFrame {
         metodos = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         paths = new javax.swing.JComboBox();
-        jPanel3 = new javax.swing.JPanel();
+        txtComplexidade = new javax.swing.JLabel();
+        complexidadeOtimizada = new javax.swing.JLabel();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        graphTab = new javax.swing.JPanel();
+        controlButtonsArea = new javax.swing.JPanel();
+        controlButtons = new javax.swing.JPanel();
+        moveButton = new javax.swing.JToggleButton();
+        selectButton = new javax.swing.JToggleButton();
+        zoomInButton = new javax.swing.JButton();
+        zoomOutButton = new javax.swing.JButton();
         graphArea = new javax.swing.JPanel();
+        optimizedGraphTab = new javax.swing.JPanel();
+        optimizedGraphButtonsArea = new javax.swing.JPanel();
+        optimizedGraphArea = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         scrollPane = new javax.swing.JScrollPane();
         codeArea = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
+        txtCaminho = new javax.swing.JLabel();
         pathText = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         predicatesTable = new javax.swing.JTable();
-        jLabel5 = new javax.swing.JLabel();
+        txtComplexidadeAnalise = new javax.swing.JLabel();
         complexidade = new javax.swing.JLabel();
         selectedNode = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -111,15 +130,136 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setMinimumSize(new java.awt.Dimension(800, 750));
-        jPanel3.setPreferredSize(new java.awt.Dimension(800, 750));
-        jPanel3.setLayout(new java.awt.GridLayout(1, 2));
+        txtComplexidade.setText("Complexidade otimizada:");
 
-        graphArea.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        graphArea.setMinimumSize(new java.awt.Dimension(400, 700));
-        graphArea.setPreferredSize(new java.awt.Dimension(400, 700));
+        jTabbedPane2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane2StateChanged(evt);
+            }
+        });
+        jTabbedPane2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTabbedPane2FocusGained(evt);
+            }
+        });
+
+        graphTab.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        graphTab.setMinimumSize(new java.awt.Dimension(400, 700));
+        graphTab.setPreferredSize(new java.awt.Dimension(400, 700));
+
+        controlButtonsArea.setLayout(new java.awt.GridLayout(1, 0));
+
+        moveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/move.png"))); // NOI18N
+        moveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moveButtonActionPerformed(evt);
+            }
+        });
+
+        selectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/select.png"))); // NOI18N
+        selectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectButtonActionPerformed(evt);
+            }
+        });
+
+        zoomInButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/zoom_in.png"))); // NOI18N
+        zoomInButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomInButtonActionPerformed(evt);
+            }
+        });
+
+        zoomOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/zoom_out.png"))); // NOI18N
+        zoomOutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomOutButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout controlButtonsLayout = new javax.swing.GroupLayout(controlButtons);
+        controlButtons.setLayout(controlButtonsLayout);
+        controlButtonsLayout.setHorizontalGroup(
+            controlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlButtonsLayout.createSequentialGroup()
+                .addComponent(moveButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(selectButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(zoomInButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(zoomOutButton)
+                .addGap(0, 117, Short.MAX_VALUE))
+        );
+        controlButtonsLayout.setVerticalGroup(
+            controlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(moveButton)
+                .addComponent(selectButton)
+                .addComponent(zoomInButton)
+                .addComponent(zoomOutButton))
+        );
+
+        controlButtonsArea.add(controlButtons);
+
         graphArea.setLayout(new java.awt.BorderLayout());
-        jPanel3.add(graphArea);
+
+        javax.swing.GroupLayout graphTabLayout = new javax.swing.GroupLayout(graphTab);
+        graphTab.setLayout(graphTabLayout);
+        graphTabLayout.setHorizontalGroup(
+            graphTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(graphTabLayout.createSequentialGroup()
+                .addGroup(graphTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(graphArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(controlButtonsArea, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        graphTabLayout.setVerticalGroup(
+            graphTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(graphTabLayout.createSequentialGroup()
+                .addComponent(controlButtonsArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(graphArea, javax.swing.GroupLayout.DEFAULT_SIZE, 1007, Short.MAX_VALUE))
+        );
+
+        jTabbedPane2.addTab("Graph", graphTab);
+
+        optimizedGraphTab.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        optimizedGraphTab.setMinimumSize(new java.awt.Dimension(400, 700));
+        optimizedGraphTab.setPreferredSize(new java.awt.Dimension(400, 700));
+
+        optimizedGraphButtonsArea.setPreferredSize(new java.awt.Dimension(0, 34));
+
+        javax.swing.GroupLayout optimizedGraphButtonsAreaLayout = new javax.swing.GroupLayout(optimizedGraphButtonsArea);
+        optimizedGraphButtonsArea.setLayout(optimizedGraphButtonsAreaLayout);
+        optimizedGraphButtonsAreaLayout.setHorizontalGroup(
+            optimizedGraphButtonsAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        optimizedGraphButtonsAreaLayout.setVerticalGroup(
+            optimizedGraphButtonsAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 34, Short.MAX_VALUE)
+        );
+
+        optimizedGraphArea.setLayout(new java.awt.BorderLayout());
+
+        javax.swing.GroupLayout optimizedGraphTabLayout = new javax.swing.GroupLayout(optimizedGraphTab);
+        optimizedGraphTab.setLayout(optimizedGraphTabLayout);
+        optimizedGraphTabLayout.setHorizontalGroup(
+            optimizedGraphTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(optimizedGraphArea, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
+            .addComponent(optimizedGraphButtonsArea, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
+        );
+        optimizedGraphTabLayout.setVerticalGroup(
+            optimizedGraphTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, optimizedGraphTabLayout.createSequentialGroup()
+                .addComponent(optimizedGraphButtonsArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(optimizedGraphArea, javax.swing.GroupLayout.DEFAULT_SIZE, 1120, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane2.addTab("Optimized Graph", optimizedGraphTab);
 
         scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -136,7 +276,11 @@ public class MainForm extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Código", scrollPane);
 
-        jLabel4.setText("Caminho");
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        txtCaminho.setText("Caminho");
+        jPanel1.add(txtCaminho, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 31, -1, -1));
+        jPanel1.add(pathText, new org.netbeans.lib.awtextra.AbsoluteConstraints(74, 31, -1, -1));
 
         predicatesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -165,7 +309,12 @@ public class MainForm extends javax.swing.JFrame {
             predicatesTable.getColumnModel().getColumn(2).setMaxWidth(65);
         }
 
-        jLabel5.setText("Complexidade Ciclomática:");
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 65, 372, 242));
+
+        txtComplexidadeAnalise.setText("Complexidade Ciclomática:");
+        jPanel1.add(txtComplexidadeAnalise, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
+        jPanel1.add(complexidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(184, 6, -1, -1));
+        jPanel1.add(selectedNode, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 433, -1, -1));
 
         selectedCodeArea.setEditable(false);
         selectedCodeArea.setColumns(20);
@@ -173,56 +322,10 @@ public class MainForm extends javax.swing.JFrame {
         selectedCodeArea.setRows(5);
         jScrollPane3.setViewportView(selectedCodeArea);
 
-        jLabel6.setText("Código do nó selecionado");
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 336, 372, 484));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(pathText))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(complexidade))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectedNode))
-                    .addComponent(jLabel6))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(complexidade))
-                .addGap(3, 3, 3)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(pathText))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(selectedNode)
-                        .addGap(393, 393, 393))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
+        jLabel6.setText("Código do nó selecionado");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 314, -1, -1));
 
         jTabbedPane1.addTab("Análise", jPanel1);
 
@@ -256,10 +359,6 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
@@ -271,9 +370,18 @@ public class MainForm extends javax.swing.JFrame {
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(className)))
+                        .addGap(294, 294, 294)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(paths, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtComplexidade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(complexidadeOtimizada)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(paths, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jTabbedPane2))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -281,21 +389,20 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(className))
+                    .addComponent(className)
+                    .addComponent(txtComplexidade)
+                    .addComponent(complexidadeOtimizada))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(metodos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(paths, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1203, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane2))
+                .addContainerGap())
         );
 
         pack();
@@ -321,7 +428,7 @@ public class MainForm extends javax.swing.JFrame {
             try {
 
                 metodos.removeAllItems();
-
+                JavaParser.setDoNotAssignCommentsPreceedingEmptyLines(false);
                 cu = JavaParser.parse(file);
                 className.setText(file.getName());
                 metodos.addItemListener(new ItemChangeListener());
@@ -337,7 +444,95 @@ public class MainForm extends javax.swing.JFrame {
             System.out.println("File access cancelled by user.");
         }
     }//GEN-LAST:event_ExitActionPerformed
+
+    private void jTabbedPane2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTabbedPane2FocusGained
+
+    }//GEN-LAST:event_jTabbedPane2FocusGained
+
+    private void jTabbedPane2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane2StateChanged
+        JTabbedPane sourceTabbedPane = (JTabbedPane) evt.getSource();
+        int index = sourceTabbedPane.getSelectedIndex();
+        //        System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(index));
+        if (index == 0) {
+            if (jTabbedPane1.getComponentCount() > 0) {
+                jTabbedPane1.setEnabledAt(0, true);
+                unhideAnalysisElements();
+
+            }
+            if (app != null) {
+                activeRenderer = app.getRenderer();
+                setMoveMode(true);
+            }
+            moveControlButtons(controlButtonsArea);
+        } else {
+            jTabbedPane1.setEnabledAt(0, false);
+            jTabbedPane1.setSelectedIndex(1);
+            hideAnalysisElements();
+            if (app != null) {
+                activeRenderer = app.getOptimizedRenderer();
+                setMoveMode(true);
+            }
+            moveControlButtons(optimizedGraphButtonsArea);
+        }
+    }//GEN-LAST:event_jTabbedPane2StateChanged
+
+    private void moveControlButtons(JPanel panel){
+        panel.removeAll();
+        panel.add(controlButtons);
+        panel.revalidate();
+    }
     
+    private void moveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveButtonActionPerformed
+        if (selectButton.isSelected()) {
+            setMoveMode(true);
+        } else {
+            setMoveMode(false);
+        }
+    }//GEN-LAST:event_moveButtonActionPerformed
+
+    private void selectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectButtonActionPerformed
+        if (moveButton.isSelected()) {
+            setSelectMode(true);
+        } else {
+            setSelectMode(false);
+        }
+    }//GEN-LAST:event_selectButtonActionPerformed
+
+    private void setMoveMode(boolean value) {
+        moveButton.setSelected(value);
+        if (activeRenderer != null) {
+            if (moveButton.isSelected()) {
+                activeRenderer.setMoveMode();
+                selectButton.setSelected(false);
+            } else {
+                setSelectMode(true);
+            }
+        }
+    }
+
+    private void setSelectMode(boolean value) {
+        selectButton.setSelected(value);
+        if (activeRenderer != null) {
+            if (selectButton.isSelected()) {
+                activeRenderer.setSelectingMode();
+                moveButton.setSelected(false);
+            } else {
+                setMoveMode(true);
+            }
+        }
+    }
+    private void zoomInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInButtonActionPerformed
+        if (activeRenderer != null) {
+            activeRenderer.zoomIn();
+        }
+    }//GEN-LAST:event_zoomInButtonActionPerformed
+
+    private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
+        if (activeRenderer != null) {
+            activeRenderer.zoomOut();
+        }
+    }//GEN-LAST:event_zoomOutButtonActionPerformed
+
     class ItemChangeListener implements ItemListener {
 
         @Override
@@ -348,22 +543,35 @@ public class MainForm extends javax.swing.JFrame {
                     if (metodos.getItemCount() > 0) {
                         CustomComboBoxItem item = (CustomComboBoxItem) event.getItem();
                         activeItem = item;
-                        App app = item.getApp();
+                        app = item.getApp();
                         codeArea.setText(app.getCode());
 
                         TextLineNumber tln = new TextLineNumber(codeArea);
                         scrollPane.setRowHeaderView(tln);
 
                         updateGraphArea(app.getRenderer());
+                        updateOptimizedGraphArea(app.getOptimizedRenderer());
                         GraphAnalysis analysis = app.getAnalysis();
-
+                        if (app.hasOptimizingSugestions()) {
+                            jTabbedPane2.setEnabledAt(1, true);
+                        } else {
+                            jTabbedPane2.setEnabledAt(1, false);
+                        }
                         paths.removeAllItems();
-
+                        activeRenderer = app.getRenderer();
+                        setMoveMode(true);
                         analysis.getPaths().stream().forEach((path) -> {
                             paths.addItem(path);
                         });
 
                         complexidade.setText(Integer.toString(paths.getItemCount()));
+                        if (app.hasOptimizingSugestions()) {
+                            txtComplexidade.setVisible(true);
+                            complexidadeOtimizada.setText(Integer.toString(app.getOptimizedAnalysis().getPaths().size()));
+                        } else {
+                            txtComplexidade.setVisible(false);
+                            complexidadeOtimizada.setText("");
+                        }
                     }
 
                 } else if (event.getSource().equals(paths)) {
@@ -380,6 +588,7 @@ public class MainForm extends javax.swing.JFrame {
 
                             activeItem.getApp().getRenderer().fillPath(path.getNodes());
                             updateGraphArea(activeItem.getApp().getRenderer());
+
                         }
 
                     }
@@ -389,12 +598,40 @@ public class MainForm extends javax.swing.JFrame {
         }
     }
 
+    private void hideAnalysisElements() {
+        jScrollPane2.setVisible(false);
+        txtCaminho.setVisible(false);
+        txtComplexidadeAnalise.setVisible(false);
+        complexidade.setVisible(false);
+        pathText.setVisible(false);
+    }
+
+    private void unhideAnalysisElements() {
+        jScrollPane2.setVisible(true);
+        txtCaminho.setVisible(true);
+        txtComplexidadeAnalise.setVisible(true);
+        complexidade.setVisible(true);
+        pathText.setVisible(true);
+    }
+
     private void updateGraphArea(Renderer renderer) {
-        graphArea.removeAll();
-        graphArea.add(renderer.getVisualizationViewer(), BorderLayout.CENTER);
-        graphArea.revalidate();
-        graphArea.repaint();
-        graphArea.requestFocus();
+        if (renderer != null) {
+            graphArea.removeAll();
+            graphArea.add(renderer.getVisualizationViewer(), BorderLayout.CENTER);
+            graphArea.revalidate();
+            graphArea.repaint();
+            graphArea.requestFocus();
+        }
+    }
+
+    private void updateOptimizedGraphArea(Renderer renderer) {
+        if (renderer != null) {
+            optimizedGraphArea.removeAll();
+            optimizedGraphArea.add(renderer.getVisualizationViewer(), BorderLayout.CENTER);
+            optimizedGraphArea.revalidate();
+            optimizedGraphArea.repaint();
+            optimizedGraphArea.requestFocus();
+        }
     }
 
     /**
@@ -463,27 +700,39 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JLabel className;
     private javax.swing.JTextArea codeArea;
     private javax.swing.JLabel complexidade;
+    private javax.swing.JLabel complexidadeOtimizada;
+    private javax.swing.JPanel controlButtons;
+    private javax.swing.JPanel controlButtonsArea;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JPanel graphArea;
+    private javax.swing.JPanel graphTab;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JComboBox metodos;
+    private javax.swing.JToggleButton moveButton;
+    private javax.swing.JPanel optimizedGraphArea;
+    private javax.swing.JPanel optimizedGraphButtonsArea;
+    private javax.swing.JPanel optimizedGraphTab;
     private javax.swing.JLabel pathText;
     private javax.swing.JComboBox paths;
     private javax.swing.JTable predicatesTable;
     private javax.swing.JScrollPane scrollPane;
+    private javax.swing.JToggleButton selectButton;
     private javax.swing.JTextArea selectedCodeArea;
     private javax.swing.JLabel selectedNode;
+    private javax.swing.JLabel txtCaminho;
+    private javax.swing.JLabel txtComplexidade;
+    private javax.swing.JLabel txtComplexidadeAnalise;
+    private javax.swing.JButton zoomInButton;
+    private javax.swing.JButton zoomOutButton;
     // End of variables declaration//GEN-END:variables
 }
